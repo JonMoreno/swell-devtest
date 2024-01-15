@@ -89,6 +89,45 @@ describe('ReviewsController', () => {
 
 		it.todo('should include company data with review');
 
+		// testing todo's above
 		// Feel free to add any additional tests you think are necessary
+		it('should fetch all reviews', async () => {
+			const response = await request(app.getHttpServer()).get('/reviews');
+			expect(response.status).toBe(200);
+			expect(Array.isArray(response.body.reviews)).toBe(true);
+		});
+
+		it('should fetch reviews in descending order by date', async () => {
+			const response = await request(app.getHttpServer()).get('/reviews');
+			expect(response.status).toBe(200);
+
+			const reviews = response.body.reviews;
+			expect(Array.isArray(reviews)).toBe(true);
+
+			const sortedReviews = [...reviews].sort(
+				(a, b) => new Date(b.createdOn).getTime() - new Date(a.createdOn).getTime(),
+			);
+			expect(reviews).toEqual(sortedReviews);
+		});
+
+		it('should include user data with review', async () => {
+			const response = await request(app.getHttpServer()).get('/reviews');
+			expect(response.status).toBe(200);
+
+			const reviews = response.body.reviews;
+			for (const review of reviews) {
+				expect(review.user).toBeDefined();
+			}
+		});
+
+		it('should include company data with review', async () => {
+			const response = await request(app.getHttpServer()).get('/reviews');
+			expect(response.status).toBe(200);
+
+			const reviews = response.body.reviews;
+			for (const review of reviews) {
+				expect(review.company).toBeDefined();
+			}
+		});
 	});
 });
